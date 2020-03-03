@@ -1,23 +1,23 @@
-#include <cache.hh>
-#include <evictor.hh>
+#include "cache.hh"
+#include "evictor.hh"
 #include <vector>
 #include <math.h>
 #include <string>
 #include <utility>
 
-using size_type = cache::Cache::size_type;
-using key_type = evictor::key_type;
-using val_type = cache::Cache::val_type;
-using hash_func = cache::Cache::hash_func;
+using size_type = Cache::size_type;
+
+using val_type = Cache::val_type;
+using hash_func = Cache::hash_func;
 
 
 
-class cache::Cache::Impl
+class Cache::Impl
 {
     public:
         size_type maxmem;
         float max_load_factor;
-        evictor::Evictor* evictor;
+        Evictor* evictor;
         hash_func hasher;
         size_type byte_used; // # byte in the cache
         size_type bucket_used;
@@ -33,7 +33,7 @@ class cache::Cache::Impl
                     key_type key;
                     val_type val;
                     size_type size;
-                }
+                };
                 std::vector<struct kvpair_type> table;
                 hash_func hasher;
                 float max_load_factor;
@@ -42,7 +42,8 @@ class cache::Cache::Impl
                 HashTable(size_type init_size, hash_func hasher, float max_load_factor)
                 : hasher(hasher), max_load_factor(max_load_factor), bucket_used(0)
                 {
-                    table.resize(init_size);
+                    struct kvpair_type null_pair{"", nullptr, 0};
+                    table.resize(init_size, null_pair);
                 }
 
                 ~HashTable()
@@ -58,11 +59,11 @@ class cache::Cache::Impl
                     for (auto& pair : table)
                     {
                         auto new_index = hasher(pair.key) % new_table.size();
-                        while (new_table[new_index] != 0)
+                        while (new_table[new_index].val != nullptr)
                         {
                             new_index = (new_index + 1) % new_table.size();
                         }
-                        new_table[new_index] = pair
+                        new_table[new_index] = pair;
                     }
                     //deallocates old hashtable
                     table.clear();
@@ -76,11 +77,11 @@ class cache::Cache::Impl
                     //resize the hash table if necessary
 
                     auto index = hasher(pair.key);
-                    while(table[index] != 0 && table[index].key != pair.key)
+                    while(table[index].val != nullptr && table[index].key != pair.key)
                     {
                         index = (index + 1) % table.size();
                     }
-                    if (table[index] = 0) {bucket_used++;}
+                    if (table[index].val == nullptr) {bucket_used++;}
                     table[index] = pair;
 
                     if (static_cast<float>(bucket_used) / static_cast<float>(table.size()) > max_load_factor)
@@ -90,21 +91,21 @@ class cache::Cache::Impl
                 }
 
                 // search the hashtable and return the index of the key
-                size_type search(key_type key)
+                int search(key_type key)
                 {
                     auto index = hasher(key);
-                    while(table[index] != 0 && table[index].key != key)
+                    while(table[index].val != nullptr && table[index].key != key)
                     {
-                        index++
+                        index++;
                     }
-                    if (table[index] == 0) {return NULL;}
+                    if (table[index].val == nullptr) {return -1;}
                     else {return index;}
                 }
 
                 // retrieve the corresponding value of the given key
                 val_type get(key_type key)
                 {
-                    auto i = search(key)
+                    auto i = search(key);
                     return table[i].val;
                 }
 
@@ -113,23 +114,25 @@ class cache::Cache::Impl
                 // and j is the index whose element is being evacuated
                 struct kvpair_type del(key_type key)
                 {
-                    auto i = search(key);
+                    size_type i = search(key);
                     auto pair = table[i];
-                    table[i] = 0;
+                    struct kvpair_type null_pair{"", nullptr, 0};
+                    table[i] = null_pair;
 
-                    j = i + 1;
+                    size_type j = i + 1;
                     while (true)
                     {
-                        while (table[j] != 0 && hasher(table[j].key) > i)
+                        while (table[j].val != nullptr && hasher(table[j].key) > i)
                         {
                             j++;
                         }
                         
-                        if (table[j] == 0) break;
+                        if (table[j].val == nullptr) break;
                         else
                         {
                             table[i] = table[j];
-                            table[j] = 0;
+                            struct kvpair_type null_pair{"", nullptr, 0};
+                            table[j] = null_pair;
                             i = j;
                             j++;
                         }
@@ -149,7 +152,7 @@ class cache::Cache::Impl
             evictor(evictor), hasher(hasher),
             byte_used(0), bucket_used(0)
         {
-            pHash = new HashTable(INIT_SIZE, hasher, max_load_factor);
+            pHash = std::unique_ptr<HashTable>(new HashTable(INIT_SIZE, hasher, max_load_factor));
         }
 
         ~Impl() = default;
@@ -157,14 +160,13 @@ class cache::Cache::Impl
 };
 
 
-cache::Cache(cache::Cache::size_type maxmem,
-        float max_load_factor = 0.75,
-        evictor::Evictor* evictor = nullptr,
-        cache::Cache::hash_func hasher = std::hash<evictor::key_type>())
+Cache::Cache(size_type maxmem,
+        float max_load_factor,
+        Evictor* evictor,
+        hash_func hasher)
 {
-    pImpl = new Impl(maxmem, max_load_factor, evictor, hasher);
-    
-};
+    pImpl_ = std::unique_ptr<Cache::Impl>(new Cache::Impl(maxmem, max_load_factor, evictor, hasher));
+}
 
 // Add a <key, value> pair to the cache.
 // If key already exists, it will overwrite the old value.
@@ -172,32 +174,32 @@ cache::Cache(cache::Cache::size_type maxmem,
 // If maxmem capacity is exceeded, enough values will be removed
 // from the cache to accomodate the new value. If unable, the new value
 // isn't inserted to the cache.
-void cache::Cache::set(key_type key, val_type val, size_type size)
+void Cache::set(key_type key, val_type val, size_type size)
 {   
-    if (size <= maxmem)
+    if (size <= pImpl_->maxmem)
     {
         //check if setting will exceed maxmem
-        auto i = pImpl->pHash->search(key);
+        auto i = pImpl_->pHash->search(key);
         int size_to_add;
-        if (i == NULL){size_to_add = size;}
-        else {size_to_add = size - pImpl->pHash->table[i].size;}
+        if (i == -1){size_to_add = size;}
+        else {size_to_add = size - pImpl_->pHash->table[i].size;}
 
         // keep evicting until there is enough space for the new pair
-        while (static_cast<int>(pImpl->byte_used) + size_to_add > maxmem)
+        while (static_cast<int>(pImpl_->byte_used) + size_to_add > pImpl_->maxmem)
         {
-            auto to_be_evicted = evictor->evict();
-            auto i_evicted = pImpl->pHash->search(to_be_evicted);
+            auto to_be_evicted = pImpl_->evictor->evict();
+            auto i_evicted = pImpl_->pHash->search(to_be_evicted);
             // keep asking the evictor for key if the key is not in the hash table
-            while(i_evicted == NULL)
+            while(i_evicted == -1)
             {
-                to_be_evicted = evictor->evict();
-                i_evicted = pImpl->pHash->search(to_be_evicted);
+                to_be_evicted = pImpl_->evictor->evict();
+                i_evicted = pImpl_->pHash->search(to_be_evicted);
             }
 
-            auto to_be_deleted = pImpl->pHash->table[i_evicted];
+            auto to_be_deleted = pImpl_->pHash->table[i_evicted];
             delete[] to_be_deleted.val;
-            pImpl->pHash->del(to_be_evicted);
-            pImpl->byte_used -= to_be_deleted.size;
+            pImpl_->pHash->del(to_be_evicted);
+            pImpl_->byte_used -= to_be_deleted.size;
         }
 
         // deep copy val and make a pair
@@ -206,53 +208,57 @@ void cache::Cache::set(key_type key, val_type val, size_type size)
         {
             val_cp_ptr[i] = val[i];
         }
-        struct pImpl->pHash->kvpair_type pair{key, val_cp_ptr, size};
+        struct Impl::HashTable::kvpair_type pair{key, val_cp_ptr, size};
 
-        pImpl->pHash->set(pair);
-        pImpl->byte_used += size;
-        evictor->touch_key(key);
+        pImpl_->pHash->set(pair);
+        pImpl_->byte_used += size;
+        pImpl_->evictor->touch_key(key);
 
 
     }
-};
+}
 
 // Retrieve a pointer to the value associated with key in the cache,
 // or nullptr if not found.
 // Sets the actual size of the returned value (in bytes) in val_size.
-val_type cache::Cache::get(key_type key, size_type& val_size) const
+val_type Cache::get(key_type key, size_type& val_size) const
 {
-    auto i = pImpl->pHash->search(key);
-    auto obj = pImpl->pHash->table[i];
+    auto i = pImpl_->pHash->search(key);
+    auto obj = pImpl_->pHash->table[i];
     val_size = obj.size;
-    evictor->touch_key(key);
+    pImpl_->evictor->touch_key(key);
     return obj.val;
-};
+}
 
 // Delete an object from the cache, if it's still there
-bool cache::Cache::del(key_type key)
+bool Cache::del(key_type key)
 {
-    auto i = pImpl->pHash->search(key);
-    if (i == NULL) {return false;}
-    pImpl->pHash->del(key);
+    auto i = pImpl_->pHash->search(key);
+    if (i == -1) {return false;}
+    pImpl_->pHash->del(key);
     return true;
-};
+}
 
 // Compute the total amount of memory used up by all cache values (not keys)
-size_type cache::Cache::space_used() const
+size_type Cache::space_used() const
 {
-    return pImpl->byte_used;
-};
+    return pImpl_->byte_used;
+}
 
 // Delete all data from the cache
-void cache::Cache::reset()
+void Cache::reset()
 {
-    for (auto& it : pImpl->pHash->table)
+    for (auto& it : pImpl_->pHash->table)
     {
         delete[] it.val;
     }
-    pImpl->pHash->table.clear();
+    pImpl_->pHash->table.clear();
 
-    pImpl->byte_used = 0;
-};
+    pImpl_->byte_used = 0;
+}
 
 
+int main()
+{
+    
+}
