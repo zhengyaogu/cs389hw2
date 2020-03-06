@@ -256,9 +256,3 @@ void Cache::reset()
 
     pImpl_->byte_used = 0;
 }
-
-
-int main()
-{
-    
-}

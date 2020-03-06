@@ -1,0 +1,27 @@
+#include "fifo_evictor.hh"
+#include <algorithm>
+
+FIFO_Evictor::FIFO_Evictor()
+{
+    std::queue<key_type> empty;
+    std::swap(my_que, empty);
+}
+
+FIFO_Evictor::~FIFO_Evictor() {}
+
+void FIFO_Evictor::touch_key(const key_type& my_key)
+{
+    my_que.push(my_key);
+}
+
+// returns empty string if the queue is empty.
+const key_type FIFO_Evictor::evict()
+{
+    if(!my_que.empty())
+    {
+        key_type my_key = my_que.front();
+        my_que.pop();
+        return my_key;
+    }
+    return "";
+}
