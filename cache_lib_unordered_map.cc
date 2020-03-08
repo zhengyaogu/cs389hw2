@@ -7,11 +7,13 @@
 class Cache::Impl
 {
     using pair_type = std::pair<Cache::val_type, Cache::size_type>;
+
     private:
     Cache::size_type my_maxmem, current_mem;
     std::unordered_map < key_type, pair_type, std::function<std::size_t(key_type)>> * table = nullptr;
     float my_max_load_factor = 0.0;
     Evictor * my_evictor = nullptr;
+
     public:
     Impl(Cache::size_type maxmem,
         float max_load_factor,
@@ -25,12 +27,16 @@ class Cache::Impl
         my_max_load_factor = max_load_factor;
         my_evictor = evictor;
     }
+
     ~Impl()
     {
         for (auto iter = table->begin(); iter != table->end(); iter ++)
             delete iter->second.first;
+        table->clear();
         delete table;
     }
+
+    //free up the memory iter.val points to and get rid of iter in the map
     void free(std::unordered_map<key_type, pair_type>::const_iterator iter)
     {
         assert(current_mem >= iter->second.second);
@@ -38,6 +44,8 @@ class Cache::Impl
         delete iter->second.first;
         table->erase(iter);
     }
+
+    // set key val pair.
     void set(key_type key, Cache::val_type val, Cache::size_type size)
     {
         int size_change = 0;
@@ -66,10 +74,16 @@ class Cache::Impl
         if(iter != table->end())
             free(iter);
         // Insert.
-        Cache::val_type copied_val = new const Cache::byte_type(*val);
+        Cache::byte_type* copied_val = new byte_type[size];
+        for (unsigned int i = 0; i < size; ++i)
+        {
+            copied_val[i] = val[i];
+        }
         table->insert(std::pair<key_type, pair_type> (key, pair_type (copied_val, size)));
         current_mem += size;
         assert(table->max_load_factor() <= my_max_load_factor);
+
+        my_evictor->touch_key(key);
     }
 
     Cache::val_type get(key_type key, Cache::size_type& val_size) const
@@ -82,6 +96,8 @@ class Cache::Impl
             return nullptr;
         }
         val_size = iter->second.second;
+
+        my_evictor->touch_key(key);
         return iter->second.first;
     }
 
@@ -94,7 +110,7 @@ class Cache::Impl
         return true;
     }
 
-    size_type get_current_mem() const
+    Cache::size_type get_current_mem() const
     {
         return current_mem;
     }

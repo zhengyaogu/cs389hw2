@@ -8,6 +8,7 @@ FIFO_Evictor::FIFO_Evictor()
 
 FIFO_Evictor::~FIFO_Evictor() 
 {
+    while(!my_que->empty()) my_que->pop();
     delete my_que;
 }
 
