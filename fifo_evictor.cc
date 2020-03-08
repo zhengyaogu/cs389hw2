@@ -3,24 +3,26 @@
 
 FIFO_Evictor::FIFO_Evictor()
 {
-    std::queue<key_type> empty;
-    std::swap(my_que, empty);
+    my_que = new std::queue<key_type>;
 }
 
-FIFO_Evictor::~FIFO_Evictor() {}
+FIFO_Evictor::~FIFO_Evictor() 
+{
+    delete my_que;
+}
 
 void FIFO_Evictor::touch_key(const key_type& my_key)
 {
-    my_que.push(my_key);
+    my_que->push(my_key);
 }
 
 // returns empty string if the queue is empty.
 const key_type FIFO_Evictor::evict()
 {
-    if(!my_que.empty())
+    if(!my_que->empty())
     {
-        key_type my_key = my_que.front();
-        my_que.pop();
+        key_type my_key = my_que->front();
+        my_que->pop();
         return my_key;
     }
     return "";

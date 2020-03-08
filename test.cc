@@ -11,7 +11,11 @@ using key_type = std::string;
 void test_1()
 {
     Evictor* evictor_ptr = new FIFO_Evictor();
-    Cache my_cache(100, 0.75, evictor_ptr, nullptr);
+    Cache my_cache(100, 0.75, evictor_ptr);
+    auto first_str = "first_val";
+    val_type first_val = first_str;
+    my_cache.set("fist_key", first_val, 2);
+    delete evictor_ptr;
 }
 
 int main()

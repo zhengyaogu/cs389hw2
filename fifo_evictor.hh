@@ -14,7 +14,7 @@ using key_type = std::string;
 // mechanism other than eviction.
 class FIFO_Evictor : public Evictor{
     private:
-    std::queue<key_type> my_que;
+    std::queue<key_type> * my_que;
     public:
     FIFO_Evictor();
     ~FIFO_Evictor();
