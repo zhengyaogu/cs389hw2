@@ -31,7 +31,7 @@ class Cache::Impl
     ~Impl()
     {
         for (auto iter = table->begin(); iter != table->end(); iter ++)
-            delete iter->second.first;
+            delete[] iter->second.first;
         table->clear();
         delete table;
     }
@@ -41,11 +41,10 @@ class Cache::Impl
     {
         assert(current_mem >= iter->second.second);
         current_mem -= iter->second.second;
-        delete iter->second.first;
+        delete[] iter->second.first;
         table->erase(iter);
     }
 
-    // set key val pair.
     void set(key_type key, Cache::val_type val, Cache::size_type size)
     {
         int size_change = 0;
@@ -79,7 +78,7 @@ class Cache::Impl
             free(iter);
         // Insert.
         Cache::byte_type* copied_val = new byte_type[size];
-        for (unsigned int i = 0; i < size; ++i)
+        for (unsigned int i = 0; i < strlen(val); ++i) // use strlen to prevent reading over val
         {
             copied_val[i] = val[i];
         }
@@ -121,6 +120,7 @@ class Cache::Impl
         return current_mem;
     }
 
+    // delete everything that is in Impl
     void reset()
     {
         while(!table->empty())
