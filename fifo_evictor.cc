@@ -1,5 +1,4 @@
 #include "fifo_evictor.hh"
-#include <algorithm>
 
 FIFO_Evictor::FIFO_Evictor()
 {
