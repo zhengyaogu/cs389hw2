@@ -28,3 +28,8 @@ The unordered map expands its bucket numbers and rehash its values with the hash
 ### Eviction Policy
 For eviction policy, we employ first-in-first-out(FIFO) principle. The key being evicted is the key of the earliest access or insertion that has not been evicted and deleted.
 This makes queue the perfect vehicle for FIFO evictor. Everytime a key is successfully accessed or inserted in the cache, it is push into the queue.
+
+### LRU Evictor
+The LRU Evictor is implemented by using a doubly linked list and a hash table, where the hash table is implemented by `std::unordered_map`. The doubly linked list, from head to tail, stores the least recently used key to the most recently used key. The hash table stores the keys and their respective nodes' addresses in the doubly linked list. \\
+When a key get touched, the evictor will first look at the hash table and locate the address of its node. Then it will remove this node from the linked list and attach it to the list's tail, i.e. this node becomes the new tail. This operation asymptotically is O(1).\\
+When the evict() function is called, the evictor simply returns the list's head('s key) and then delete it, making the next node in the list the new head.
