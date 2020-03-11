@@ -35,4 +35,4 @@ When a key get touched, the evictor will first look at the hash table and locate
 When the evict() function is called, the evictor simply returns the list's head('s key) and then delete it, making the next node in the list the new head.
 
 ### Valgrind
-You can type "make" and then "make valgrind" to check memory leaks. At least on our laptops we received 0 memory leaks and 0 errors.
+You can type "make" and then "make valgrind" to check memory leaks. At least on our laptops Valgrind reported 0 memory leaks and 0 errors.
