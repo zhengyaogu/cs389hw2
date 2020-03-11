@@ -112,6 +112,7 @@ void test_3_fifo()
     std::cout << "\n";
 }
 
+
 // Test lru
 void test_lru()
 {
@@ -180,6 +181,44 @@ void test_lru()
     std::cout << "\n";
 }
 
+// test when now evictor is provided
+void test_null()
+{
+    Cache my_cache(30, 0.75, nullptr);    
+
+    auto first_str = "first_val";
+    val_type val_ptr = first_str;
+    size_type first_size = 10;
+    my_cache.set("first_key", val_ptr, first_size);
+
+    auto second_str = "second_val";
+    val_ptr = second_str;
+    size_type second_size = 11;
+    my_cache.set("second_key", val_ptr, second_size);
+
+    assert(my_cache.space_used() == first_size + second_size);
+
+    auto modified_first_str = "modified_first_val";
+    val_ptr = modified_first_str;
+    size_type modified_first_size = 19;
+    my_cache.set("first_key", val_ptr, modified_first_size);
+
+    assert(my_cache.space_used() == modified_first_size + second_size);
+
+    auto third_str = "something_larger_than_30_characters";
+    val_ptr = third_str;
+    size_type third_size = 36;
+    my_cache.set("third_key", val_ptr, third_size);
+
+    auto fourth_str = "fourth_val";
+    val_ptr = fourth_str;
+    size_type fourth_size = 11;
+    my_cache.set("fourth_key", val_ptr, fourth_size);
+
+    //This should behave differently.
+    assert(my_cache.space_used() == modified_first_size + second_size);
+}
+
 int main()
 {
     Evictor* evictor_ptr = new FIFO_Evictor();
@@ -192,6 +231,10 @@ int main()
     test_2(evictor_ptr);
     test_3_fifo();
     test_lru();
+
+    test_1(nullptr);
+
+    test_null();
     std::cout << "Test Result: Pass\n";
     return 0;
 }

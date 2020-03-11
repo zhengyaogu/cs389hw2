@@ -61,6 +61,12 @@ class Cache::Impl
             std::cout << "Insertion <" << key << ", " << val << ", " << size << "> failed: not enough space\n";
             return;
         }
+        // if there is no evictor and the insertion will exceed maxmem, return
+        if (!my_evictor && int(current_mem) + size_change > int(my_maxmem))
+        {
+            std::cout << "Insertion <" << key << ", " << val << ", " << size << "> failed: no evictor to make space\n";
+            return;
+        }
         while(int(current_mem) + size_change > int(my_maxmem))
         {
             key_type eviction_key = my_evictor->evict();
@@ -87,7 +93,7 @@ class Cache::Impl
         assert(table->max_load_factor() <= my_max_load_factor);
         assert(current_mem <= my_maxmem);
 
-        my_evictor->touch_key(key);
+        if (my_evictor) {my_evictor->touch_key(key);}
     }
 
     Cache::val_type get(key_type key, Cache::size_type& val_size) const
@@ -101,7 +107,7 @@ class Cache::Impl
         }
         val_size = iter->second.second;
 
-        my_evictor->touch_key(key);
+        if (my_evictor) {my_evictor->touch_key(key);}
         return iter->second.first;
     }
 
