@@ -78,7 +78,7 @@ class Cache::Impl
             free(iter);
         // Insert.
         Cache::byte_type* copied_val = new byte_type[size];
-        for (unsigned int i = 0; i < strlen(val); ++i) // use strlen to prevent reading over val
+        for (unsigned int i = 0; i < size; ++i) 
         {
             copied_val[i] = val[i];
         }
