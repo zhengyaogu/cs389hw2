@@ -1,4 +1,4 @@
-# CS389 HW2 Hash It Out.
+# CS389 HW3 
 author: Zhengyao Gu, Albert Ji
 
 ### Overall Design
