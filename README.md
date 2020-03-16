@@ -37,3 +37,5 @@ The LRU Evictor is implemented by using a doubly linked list and a hash table, w
 ### Valgrind
 You can type "make" and then "make valgrind" to check memory leaks. At least on our laptops Valgrind reported 0 memory leaks and 0 errors.
 
+### Test Results
+## 1. Maxx + Casey
