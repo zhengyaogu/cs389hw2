@@ -83,3 +83,13 @@ Fatal Error: the desctructor of cache hasn't been implemented. All tests failed 
 |del | Failed|
 |reset | Failed|
 |LRU | N/A |
+Then I added a default destructor of cache to their code. After doing this the test results are:
+|Test_case | Result|
+|--- | --- |
+|FIFO | Passed|
+|set_no_evictor | Failed|
+|set_FIFO_eivctor | Failed|
+|get | Failed|
+|del | Passed|
+|reset | Passed|
+|LRU | N/A |
