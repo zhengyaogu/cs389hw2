@@ -64,7 +64,7 @@ The compilation was successful, and we passed all tests.
 
 ### Test Results on Other Teams
 - #### 1. Maxx + Casey
-No compilation/linking issues encountered in Maxx and Casey's program.
+No compilation/linking issues encountered in Maxx and Casey's program. Below is their test results:
 |Test_case | Result|
 |--- | --- |
 |FIFO | Passed|
@@ -76,7 +76,7 @@ No compilation/linking issues encountered in Maxx and Casey's program.
 |space_used | The space_used function | Passed|
 |LRU | N/A |
 - #### 2. Hien + David
-No compilation/linking issues are encountered in Hien and David's program.
+No compilation/linking issues are encountered in Hien and David's program. Below is their test results:
 |Test_case | Result|
 |--- | --- |
 |FIFO | Failed (Seg Fault)|
@@ -90,6 +90,7 @@ No compilation/linking issues are encountered in Hien and David's program.
 - #### 3. Sarah + Ariel
 A small compilation issue: the "cache_lib.cc" wasn't named correctly. It was named as "cache.cc".\
 Fatal Error: the desctructor of cache hasn't been implemented. All tests failed because of "undefined reference to 'Cache::~Cache()'".
+Therefore, they failed all tests.
 |Test_case | Result|
 |--- | --- |
 |FIFO | Failed|
