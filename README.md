@@ -37,7 +37,20 @@ The LRU Evictor is implemented by using a doubly linked list and a hash table, w
 ### Valgrind
 You can type "make" and then "make valgrind" to check memory leaks. At least on our laptops Valgrind reported 0 memory leaks and 0 errors.
 
-### Our Tests
+## Testing
+We designed seven test cases(modules) for our test on the implementation of `Cache`.
+The first module tests the implementation of a FIFO evictor.
+The second module tests the implementation of `Cache::set`.
+The third module tests the implementation of `Cache::get`.
+The fourth module tests the implementation of `Cache::del`.
+The fifth module tests the implementation of `Cache::reset`.
+The sixth module tests the implementation of `Cache::space_used`.
+The last module is optional. It tests the implementation of an LRU evictor.
+
+
+### Test Result on Our Code
+The compilation was successful, and we passed all tests.
+
 |Test_case | Test Target | Result|
 |--- | --- | --- |
 |FIFO | The FIFO evictor | Passed|
@@ -46,11 +59,12 @@ You can type "make" and then "make valgrind" to check memory leaks. At least on 
 |get | The get function |  Passed|
 |del | The del function | Passed|
 |reset | The reset function | Passed|
+|space_used | The space_used function | Passed|
 |LRU | The LRU evictor | Passed |
 
-### Test Results
+### Test Results on Other Teams
 - #### 1. Maxx + Casey
-No compilation/linking issues encountered.
+No compilation/linking issues encountered in Maxx and Casey's program.
 |Test_case | Result|
 |--- | --- |
 |FIFO | Passed|
@@ -59,9 +73,10 @@ No compilation/linking issues encountered.
 |get | Failed|
 |del | Passed|
 |reset | Passed|
+|space_used | The space_used function | Passed|
 |LRU | N/A |
 - #### 2. Hien + David
-No compilation/linking issues encountered.
+No compilation/linking issues are encountered in Hien and David's program.
 |Test_case | Result|
 |--- | --- |
 |FIFO | Failed (Seg Fault)|
@@ -70,6 +85,7 @@ No compilation/linking issues encountered.
 |get | Failed (Aborted)|
 |del | Passed|
 |reset | Failed|
+|space_used | The space_used function | Passed|
 |LRU | N/A |
 - #### 3. Sarah + Ariel
 A small compilation issue: the "cache_lib.cc" wasn't named correctly. It was named as "cache.cc".\
@@ -82,6 +98,7 @@ Fatal Error: the desctructor of cache hasn't been implemented. All tests failed 
 |get | Failed|
 |del | Failed|
 |reset | Failed|
+|space_used | The space_used function | Passed|
 |LRU | N/A |
 
 Then I added a default destructor of cache to their code. After doing this the test results are:
@@ -94,4 +111,5 @@ Then I added a default destructor of cache to their code. After doing this the t
 |get | Failed|
 |del | Passed|
 |reset | Passed|
+|space_used | The space_used function | Passed|
 |LRU | N/A |
