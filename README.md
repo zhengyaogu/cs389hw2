@@ -37,6 +37,17 @@ The LRU Evictor is implemented by using a doubly linked list and a hash table, w
 ### Valgrind
 You can type "make" and then "make valgrind" to check memory leaks. At least on our laptops Valgrind reported 0 memory leaks and 0 errors.
 
+### Our Tests
+|Test_case | Test Target | Result|
+|--- | --- | --- |
+|FIFO | The FIFO evictor | Passed|
+|set_no_evictor | The set function with no evictor | Passed|
+|set_FIFO_eivctor | The set functino with a FIFO evictor | Failed|
+|get | The get function | Failed|
+|del | The del function | Passed|
+|reset | The reset function | Passed|
+|LRU | The LRU evictor N/A |
+
 ### Test Results
 - #### 1. Maxx + Casey
 No compilation/linking issues encountered.
@@ -53,10 +64,21 @@ No compilation/linking issues encountered.
 No compilation/linking issues encountered.
 |Test_case | Result|
 |--- | --- |
-|FIFO | Passed|
-|set_no_evictor | Passed|
-|set_FIFO_eivctor | Failed|
-|get | Failed|
+|FIFO | Failed (Seg Fault)|
+|set_no_evictor | Failed (Aborted)|
+|set_FIFO_eivctor | Failed (Seg Fault)|
+|get | Failed (Aborted)|
 |del | Passed|
-|reset | Passed|
+|reset | Failed|
+|LRU | N/A |
+- #### 3. Sarah + Ariel
+No compilation/linking issues encountered.
+|Test_case | Result|
+|--- | --- |
+|FIFO | Failed (Seg Fault)|
+|set_no_evictor | Failed (Aborted)|
+|set_FIFO_eivctor | Failed (Seg Fault)|
+|get | Failed (Aborted)|
+|del | Passed|
+|reset | Failed|
 |LRU | N/A |
