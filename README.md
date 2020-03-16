@@ -39,3 +39,13 @@ You can type "make" and then "make valgrind" to check memory leaks. At least on 
 
 ### Test Results
 - #### 1. Maxx + Casey
+No compilation/linking issues encountered.
+Test_case | Result
+--- | --- 
+FIFO | Passed
+Set_no_evictor | Passed
+Set_FIFO_eivctor | Failed
+get | Failed
+del | Passed
+reset | Passed
+LRU | N/A 
