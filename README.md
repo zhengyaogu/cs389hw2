@@ -49,3 +49,14 @@ No compilation/linking issues encountered.
 |del | Passed|
 |reset | Passed|
 |LRU | N/A |
+- #### 2. Hien + David
+No compilation/linking issues encountered.
+|Test_case | Result|
+|--- | --- |
+|FIFO | Passed|
+|set_no_evictor | Passed|
+|set_FIFO_eivctor | Failed|
+|get | Failed|
+|del | Passed|
+|reset | Passed|
+|LRU | N/A |
