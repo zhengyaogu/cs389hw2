@@ -72,7 +72,7 @@ No compilation/linking issues encountered.
 |reset | Failed|
 |LRU | N/A |
 - #### 3. Sarah + Ariel
-A small compilation issue: the "cache_lib.cc" wasn't named correctly. It was named as "cache.cc".
+A small compilation issue: the "cache_lib.cc" wasn't named correctly. It was named as "cache.cc"./
 Fatal Error: the desctructor of cache hasn't been implemented. All tests failed because of "undefined reference to 'Cache::~Cache()'".
 |Test_case | Result|
 |--- | --- |
