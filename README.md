@@ -43,8 +43,8 @@ No compilation/linking issues encountered.
 |Test_case | Result|
 |--- | --- |
 |FIFO | Passed|
-|Set_no_evictor | Passed|
-|Set_FIFO_eivctor | Failed|
+|set_no_evictor | Passed|
+|set_FIFO_eivctor | Failed|
 |get | Failed|
 |del | Passed|
 |reset | Passed|
