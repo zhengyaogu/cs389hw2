@@ -72,13 +72,14 @@ No compilation/linking issues encountered.
 |reset | Failed|
 |LRU | N/A |
 - #### 3. Sarah + Ariel
-No compilation/linking issues encountered.
+A small compilation issue: the "cache_lib.cc" wasn't named correctly. It was named as "cache.cc".
+Fatal Error: the desctructor of cache hasn't been implemented. All tests failed because of "undefined reference to 'Cache::~Cache()'".
 |Test_case | Result|
 |--- | --- |
-|FIFO | Failed (Seg Fault)|
-|set_no_evictor | Failed (Aborted)|
-|set_FIFO_eivctor | Failed (Seg Fault)|
-|get | Failed (Aborted)|
-|del | Passed|
+|FIFO | Failed|
+|set_no_evictor | Failed|
+|set_FIFO_eivctor | Failed|
+|get | Failed|
+|del | Failed|
 |reset | Failed|
 |LRU | N/A |
