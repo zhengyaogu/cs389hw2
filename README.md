@@ -42,11 +42,11 @@ You can type "make" and then "make valgrind" to check memory leaks. At least on 
 |--- | --- | --- |
 |FIFO | The FIFO evictor | Passed|
 |set_no_evictor | The set function with no evictor | Passed|
-|set_FIFO_eivctor | The set functino with a FIFO evictor | Failed|
-|get | The get function | Failed|
+|set_FIFO_eivctor | The set functino with a FIFO evictor |  Passed|
+|get | The get function |  Passed|
 |del | The del function | Passed|
 |reset | The reset function | Passed|
-|LRU | The LRU evictor N/A |
+|LRU | The LRU evictor | Passed |
 
 ### Test Results
 - #### 1. Maxx + Casey
