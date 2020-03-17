@@ -43,8 +43,8 @@ void LRU_Evictor::touch_key(const key_type& my_key)
             assert(head == nullptr);
             head = new_node;
             tail = new_node;
-            head->next = tail;
-            tail->prev = head;
+            head->next = nullptr;
+            tail->prev = nullptr;
         }
         // one element special case.
         else if (tail == head)
@@ -118,7 +118,10 @@ const key_type LRU_Evictor::evict()
         head->prev = nullptr;
     //If this is the only element in the list.
     if(tail == head_that_would_be_deleted)
+    {
         tail = nullptr;
+        head = nullptr;
+    }
     table->erase(head_that_would_be_deleted->key);
     delete head_that_would_be_deleted;
     return return_key;

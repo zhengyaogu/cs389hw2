@@ -131,10 +131,7 @@ class Cache::Impl
     {
         while(!table->empty())
             free(table->cbegin());
-        my_maxmem = 0;
         current_mem = 0;
-        my_max_load_factor = 0;
-        my_evictor = nullptr;
         table->clear();
     }
 };
